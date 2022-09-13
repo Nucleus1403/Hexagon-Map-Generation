@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55662aa1b9e249e428ace7bddaac2a8a, type: 3}
+  m_Name: RiverModuleData
+  m_EditorClassIdentifier: 
+  Models:
+  - Type: 100000
+    EdgeCount: 1
+    Prefab: {fileID: 919132149155446097, guid: a46afd960dc2b264d9df16afd329e5d2, type: 3}
+  - Type: 100100
+    EdgeCount: 2
+    Prefab: {fileID: 919132149155446097, guid: 43443fc3ded028747beb4ad6a231c62a, type: 3}
+  - Type: 101000
+    EdgeCount: 2
+    Prefab: {fileID: 919132149155446097, guid: 241f4237189856e498e3819e2aff7a6b, type: 3}
+  - Type: 110000
+    EdgeCount: 2
+    Prefab: {fileID: 919132149155446097, guid: 9c74de25092534449ab0b055e8a7702f, type: 3}
+  - Type: 111111
+    EdgeCount: 6
+    Prefab: {fileID: 919132149155446097, guid: c00b09519d3cc124eb2a866f31e73ac8, type: 3}
+  - Type: 111000
+    EdgeCount: 3
+    Prefab: {fileID: 919132149155446097, guid: f3b1f8ecf97b7d04fa39b2b6e09dc922, type: 3}
+  - Type: 101100
+    EdgeCount: 3
+    Prefab: {fileID: 919132149155446097, guid: ecfe98582e599824e88392e36b832301, type: 3}
+  - Type: 100110
+    EdgeCount: 3
+    Prefab: {fileID: 919132149155446097, guid: 1bc384d6fdc52e54f802306cc332142b, type: 3}
+  - Type: 101110
+    EdgeCount: 4
+    Prefab: {fileID: 919132149155446097, guid: e2a6f8f51df70244491aebfb435e59d3, type: 3}
+  - Type: 110110
+    EdgeCount: 4
+    Prefab: {fileID: 919132149155446097, guid: eb109bd63de5bad4fa0199be93494fb7, type: 3}
+  - Type: 101010
+    EdgeCount: 3
+    Prefab: {fileID: 919132149155446097, guid: 00a102f399af83b44b72c5577a07f5b1, type: 3}
+  - Type: 111110
+    EdgeCount: 5
+    Prefab: {fileID: 919132149155446097, guid: bf2ef0ce53d084a4d9eda9cafd00e803, type: 3}
+  - Type: 111100
+    EdgeCount: 4
+    Prefab: {fileID: 919132149155446097, guid: 8cdc24e3b7d60fb4b91d028f09ad012e, type: 3}
