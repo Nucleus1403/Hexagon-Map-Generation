@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
@@ -36,6 +37,8 @@ public class MapBuilder : MonoBehaviour
 
     private MapData[,] _map;
 
+    private List<Vector2Int> _riverStartLocations;
+
     public void Awake()
     {
         Instance = this;
@@ -56,10 +59,18 @@ public class MapBuilder : MonoBehaviour
 
         CreateMap();
 
-
+        Invoke(nameof(StartRiverGeneration), 0.5f);
 
         //WaterMeshCombiner.CombineMeshes();
 
+    }
+
+    private void StartRiverGeneration()
+    {
+        foreach (var riverStartLocation in _riverStartLocations)
+        {
+            _map[riverStartLocation.x, riverStartLocation.y].Prefab.GetComponent<RiverGenerator>().StartSearching();
+        }
     }
 
 
@@ -73,6 +84,8 @@ public class MapBuilder : MonoBehaviour
         {
             _map[riverStartLocation.x, riverStartLocation.y].Type = HexType.RiverStart;
         }
+
+        _riverStartLocations = result;
     }
 
     private void CreateMap()
@@ -90,22 +103,25 @@ public class MapBuilder : MonoBehaviour
                         if (_map[x, y].Type != HexType.RiverStart)
                             go = Instantiate(level.HexData.Prefab, new Vector3(0, 0, 0), Quaternion.identity);
                         else
-                            go = Instantiate(DataHolder.GetHexOfType(HexType.River).Prefab, new Vector3(0, 0, 0), Quaternion.identity);
+                            go = Instantiate(DataHolder.GetHexOfType(HexType.RiverStart).Prefab, new Vector3(0, 0, 0), Quaternion.identity);
 
                         if (level.HexData.Type == HexType.Water)
                         {
                             go.transform.position = new Vector3(go.transform.position.x, level.Limit, go.transform.position.z);
                             WaterMeshCombiner.AddMeshes(go.GetComponentInChildren<MeshFilter>());
-                            _map[x, y].Type = HexType.Water;
-                            break;
-                        }
 
-                        var height = (int)(_map[x, y].Value * 100);
-                        go.transform.position = new Vector3(go.transform.position.x, (float)(height - (height % 5)) / 100, go.transform.position.z);
+                        }
+                        else
+                        {
+                            var height = (int)(_map[x, y].Value * 100);
+                            go.transform.position = new Vector3(go.transform.position.x, (float)(height - (height % 5)) / 100, go.transform.position.z);
+
+                        }
 
                         if (_map[x, y].Type == HexType.Undefined)
                             _map[x, y].Type = level.HexData.Type;
 
+                        _map[x, y].Prefab = go;
                         break;
                     }
                 }
@@ -123,12 +139,31 @@ public class MapBuilder : MonoBehaviour
 
     }
 
+    public void SetRiverLocation(GameObject prefab, Vector2Int location)
+    {
+        _map[location.x, location.y].Type = HexType.River;
+        _map[location.x, location.y].Prefab = prefab;
+    }
+
+    public Vector2Int GetTileLocationByPosition(Vector2 location)
+    {
+        float x = (int)Math.Floor(location.x);
+        x = (x - (-MapLength / 2f) * Difference.x) / Difference.x;
+
+        float y = (location.y - (-MapLength / 2f) * Difference.z) / Difference.z;
+
+        Debug.LogWarning(x + " " + y);
+
+        return new Vector2Int((int)x, (int)y);
+    }
+
     private void DestroyMap()
     {
-        foreach (var go in MapTilesList)
-        {
-            Destroy(go);
-        }
+        if (!_map.IsUnityNull())
+            foreach (var go in _map)
+            {
+                Destroy(go.Prefab);
+            }
 
         WaterMeshCombiner.RemoveAllMeshes();
     }

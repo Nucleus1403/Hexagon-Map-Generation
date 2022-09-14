@@ -9,6 +9,7 @@ public class RiverGenerator : MonoBehaviour
 
     private Transform _target;
 
+
     [ContextMenu(itemName: "Start Searching")]
     public void StartSearching()
     {
@@ -56,15 +57,24 @@ public class RiverGenerator : MonoBehaviour
         if (_pathList.Count == 0)
             return;
 
-        Instantiate(RiverData.Prefab, transform.position, Quaternion.identity);
+        var go = Instantiate(RiverData.Prefab, transform.position, Quaternion.identity);
+        go.transform.parent = transform.parent;
+
+        var location = MapBuilder.Instance.GetTileLocationByPosition(new Vector2(go.transform.position.x, go.transform.position.z));
+        MapBuilder.Instance.SetRiverLocation(go, location);
 
         foreach (var path in _pathList)
         {
-            Instantiate(RiverData.Prefab, path.transform.position, Quaternion.identity);
+            go = Instantiate(RiverData.Prefab, path.transform.position, Quaternion.identity);
+            go.transform.parent = transform.parent;
+
+            location = MapBuilder.Instance.GetTileLocationByPosition(new Vector2(go.transform.position.x, go.transform.position.z));
+            MapBuilder.Instance.SetRiverLocation(go, location);
+
             Destroy(path.transform.parent.gameObject);
         }
 
-        Destroy(transform.parent.gameObject);
+        Destroy(transform.gameObject);
     }
 
     public Collider GetBestPositionCollider(Collider[] colliders)

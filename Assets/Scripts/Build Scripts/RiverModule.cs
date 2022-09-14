@@ -64,8 +64,7 @@ public class RiverModule : MonoBehaviour
         for (var index = 1; index < moduleType.Length; index++)
         {
             var result = string.Join("", moduleType.Skip(1)) + moduleType[0];
-            Debug.LogWarning(result);
-
+            
             if (result == _riverType)
                 return 6 - index;
 
