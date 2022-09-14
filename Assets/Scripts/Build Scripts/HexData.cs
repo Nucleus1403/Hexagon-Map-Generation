@@ -5,6 +5,7 @@ using UnityEngine;
 [Serializable, CreateAssetMenu(menuName = "HexData/Generic Hex")]
 public class HexData : HexDataBase
 {
+    public HexType Type;
     public Sprite Sprite;
     public GameObject Prefab;
 }

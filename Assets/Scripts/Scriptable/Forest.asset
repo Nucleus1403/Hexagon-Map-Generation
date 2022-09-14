@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: Forest
   m_EditorClassIdentifier: 
   Id: forest
+  Type: 4
   Sprite: {fileID: 21300000, guid: 89bb7f2d3c42dab4b857338a947fe04e, type: 3}
   Prefab: {fileID: 5014109625115631104, guid: 3d3113cb9f2c0df42a9cf730ed5f93b8, type: 3}

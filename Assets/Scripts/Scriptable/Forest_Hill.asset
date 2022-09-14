@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: Forest_Hill
   m_EditorClassIdentifier: 
   Id: forest_hill
+  Type: 7
   Sprite: {fileID: 21300000, guid: 091221a8e93156c4fbd5faa026405027, type: 3}
   Prefab: {fileID: 4237474294009063584, guid: 54148d45d272e034ebe590fa38b1309e, type: 3}

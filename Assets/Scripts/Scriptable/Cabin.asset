@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: Cabin
   m_EditorClassIdentifier: 
   Id: cabin
+  Type: 8
   Sprite: {fileID: 21300000, guid: d58c80dd7c578224cb57a573d901c83e, type: 3}
   Prefab: {fileID: 3149171139967942989, guid: d217523eeac674949aa80e226d8f8efe, type: 3}

@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: Castle
   m_EditorClassIdentifier: 
   Id: castle
+  Type: 10
   Sprite: {fileID: 21300000, guid: 16ce55ebd539605448f7f67ac69cd6d3, type: 3}
   Prefab: {fileID: 2365038497016527501, guid: 2ac39864176affd4cac1776e73cd404d, type: 3}

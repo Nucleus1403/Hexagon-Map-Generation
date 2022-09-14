@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: Water
   m_EditorClassIdentifier: 
   Id: water
+  Type: 5
   Sprite: {fileID: 21300000, guid: ad35b8d8a49c1a3419646ba5075979fc, type: 3}
   Prefab: {fileID: 6050628868465946259, guid: 160b9bd51c794df489bcdd8d44ed304d, type: 3}

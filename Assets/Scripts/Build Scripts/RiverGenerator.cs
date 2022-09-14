@@ -5,8 +5,6 @@ using UnityEngine;
 
 public class RiverGenerator : MonoBehaviour
 {
-    public bool DrawGizmoRadius = false;
-
     public HexData RiverData;
 
     private Transform _target;
@@ -162,9 +160,4 @@ public class RiverGenerator : MonoBehaviour
         return false;
     }
 
-    public void OnDrawGizmos()
-    {
-        if (DrawGizmoRadius)
-            Gizmos.DrawSphere(transform.position, 1f);
-    }
 }

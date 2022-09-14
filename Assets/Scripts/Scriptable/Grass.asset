@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: Grass
   m_EditorClassIdentifier: 
   Id: grass
+  Type: 3
   Sprite: {fileID: 21300000, guid: 31d2049fd7744ac4c82114f37a3769fb, type: 3}
   Prefab: {fileID: 7885419126988457847, guid: 129255fa969f1fe4994214e95a828187, type: 3}

@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: Hill
   m_EditorClassIdentifier: 
   Id: hill
+  Type: 9
   Sprite: {fileID: 21300000, guid: bfe921e9491107d4ea800b5ad425a169, type: 3}
   Prefab: {fileID: 4700210483264342808, guid: 267e755b0304da249afb508fcd806656, type: 3}
