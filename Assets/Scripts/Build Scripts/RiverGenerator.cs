@@ -19,9 +19,16 @@ public class RiverGenerator : MonoBehaviour
         {
             StartSearchForPath();
         }
+        else
+        {
+            SearchForOcean();
+
+            if (_target)
+                StartSearchForPath();
+        }
     }
 
-    private void SearchForWater()
+    private void SearchForOcean()
     {
         var hitCollides = Physics.OverlapSphere(transform.position, 10f);
 
@@ -30,7 +37,7 @@ public class RiverGenerator : MonoBehaviour
 
         foreach (var hitCollider in hitCollides)
         {
-            if (hitCollider.name != "water") continue;
+            if (hitCollider.tag != "water_ocean") continue;
 
             var distance = Vector3.Distance(transform.position, hitCollider.transform.position);
 
@@ -46,6 +53,54 @@ public class RiverGenerator : MonoBehaviour
         _target = best.transform;
 
     }
+    private void SearchForWater()
+    {
+        var hitCollides = Physics.OverlapSphere(transform.position, 10f);
+
+        Collider bestWater = null;
+        var bestWaterDistance = 9999f;
+
+        Collider bestRiver = null;
+        var bestRiverDistance = 9999f;
+
+        foreach (var hitCollider in hitCollides)
+        {
+            if (hitCollider.tag != "water" && !hitCollider.name.ToLower().Contains("river")) continue;
+
+            if (hitCollider.name.ToLower().Contains("river"))
+                if (!(hitCollider.transform.position.y > transform.position.y))
+                {
+                    var distanceRiver = Vector3.Distance(transform.position, hitCollider.transform.position);
+
+                    if (distanceRiver < bestRiverDistance)
+                    {
+                        bestRiverDistance = distanceRiver;
+                        bestRiver = hitCollider;
+                    }
+                    continue;
+                }
+
+            var distance = Vector3.Distance(transform.position, hitCollider.transform.position);
+
+            if (distance < bestWaterDistance)
+            {
+                bestWaterDistance = distance;
+                bestWater = hitCollider;
+            }
+        }
+
+        if (bestRiver != null)
+        {
+            _target = bestRiver.transform;
+            return;
+        }
+
+        if (bestWater == null)
+            return;
+
+        _target = bestWater.transform;
+
+    }
 
     private List<Transform> _pathList = new List<Transform>();
     private List<Transform> _seenList = new List<Transform>();
@@ -55,7 +110,14 @@ public class RiverGenerator : MonoBehaviour
         CastWaterFall(transform, Vector3.Distance(transform.position, _target.transform.position));
 
         if (_pathList.Count == 0)
-            return;
+        {
+            _seenList.Clear();
+
+            CastWaterFall(transform, Vector3.Distance(transform.position, _target.transform.position), true);
+
+            if (_pathList.Count == 0)
+                return;
+        }
 
         var go = Instantiate(RiverData.Prefab, transform.position, Quaternion.identity);
         go.transform.parent = transform.parent;
@@ -96,47 +158,53 @@ public class RiverGenerator : MonoBehaviour
         return bestCollider;
     }
 
-    public bool CastWaterFall(Transform parenTransform, float distance)
+    public bool CastWaterFall(Transform parenTransform, float distance, bool direct = false)
     {
         var hitCollides = Physics.OverlapSphere(parenTransform.position, 1f).ToList();
         var bestPos = GetBestPositionCollider(hitCollides.ToArray());
 
         hitCollides.Remove(bestPos);
 
-        if (bestPos.name == "water")
+        if (bestPos.name == "water" || bestPos.name == "river")
             return true;
 
         if (!_seenList.Contains(bestPos.transform))
         {
             _seenList.Add(bestPos.transform);
 
-            if (Vector3.Distance(bestPos.transform.position, _target.transform.position) < distance)
-            {
-                if (bestPos.transform.position.y < parenTransform.position.y)
+            if (direct)
+                if (Vector3.Distance(bestPos.transform.position, _target.transform.position) < distance)
                 {
-                    if (CastWaterFall(bestPos.transform,
-                        Vector3.Distance(bestPos.transform.position, _target.transform.position)))
+                    if (bestPos.transform.position.y < parenTransform.position.y)
                     {
-                        _pathList.Add(bestPos.transform);
-                        return true;
+                        if (CastWaterFall(bestPos.transform,
+                            Vector3.Distance(bestPos.transform.position, _target.transform.position), true))
+                        {
+                            _pathList.Add(bestPos.transform);
+                            return true;
+                        }
                     }
-                }
-                else if (Math.Abs(bestPos.transform.position.y - parenTransform.position.y) < 0.01f)
-                {
+                    else if (Math.Abs(bestPos.transform.position.y - parenTransform.position.y) < 0.01f)
+                    {
 
-                    if (CastWaterFall(bestPos.transform,
-                        Vector3.Distance(bestPos.transform.position, _target.transform.position)))
-                    {
-                        _pathList.Add(bestPos.transform);
-                        return true;
+                        if (CastWaterFall(bestPos.transform,
+                            Vector3.Distance(bestPos.transform.position, _target.transform.position), true))
+                        {
+                            _pathList.Add(bestPos.transform);
+                            return true;
+                        }
                     }
                 }
-            }
         }
 
-        foreach (var hitCollider in hitCollides)
+        var rnd = new System.Random();
+        var randomized = hitCollides.OrderBy(item => rnd.Next());
+
+
+        foreach (var hitCollider in randomized)
         {
-            if (hitCollider.name == "water")
+
+            if (hitCollider.name == "water" || hitCollider.name == "river")
                 return true;
 
             if (_seenList.Contains(hitCollider.transform))
@@ -149,7 +217,7 @@ public class RiverGenerator : MonoBehaviour
 
             if (hitCollider.transform.position.y < parenTransform.position.y)
             {
-                if (CastWaterFall(hitCollider.transform, Vector3.Distance(hitCollider.transform.position, _target.transform.position)))
+                if (CastWaterFall(hitCollider.transform, Vector3.Distance(hitCollider.transform.position, _target.transform.position), direct))
                 {
                     _pathList.Add(hitCollider.transform);
                     return true;
@@ -158,7 +226,7 @@ public class RiverGenerator : MonoBehaviour
             else if (Math.Abs(hitCollider.transform.position.y - parenTransform.position.y) < 0.01f)
             {
 
-                if (CastWaterFall(hitCollider.transform, Vector3.Distance(hitCollider.transform.position, _target.transform.position)))
+                if (CastWaterFall(hitCollider.transform, Vector3.Distance(hitCollider.transform.position, _target.transform.position), direct))
                 {
                     _pathList.Add(hitCollider.transform);
                     return true;

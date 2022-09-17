@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
@@ -59,10 +60,33 @@ public class MapBuilder : MonoBehaviour
 
         CreateMap();
 
+        SetOcean();
+
         Invoke(nameof(StartRiverGeneration), 0.5f);
 
         //WaterMeshCombiner.CombineMeshes();
 
+    }
+
+    private void SetOcean()
+    {
+        SetToOcean(0, 0);
+
+    }
+
+    private void SetToOcean(int x, int y)
+    {
+        if (x >= 0 && y >= 0 && x < MapLength && y < MapLength)
+        {
+            if (_map[x, y].Prefab.transform.GetChild(0).tag != "water") return;
+
+            _map[x, y].Prefab.transform.GetChild(0).tag = "water_ocean";
+
+            SetToOcean(x + 1, y);
+            SetToOcean(x - 1, y);
+            SetToOcean(x, y + 1);
+            SetToOcean(x, y - 1);
+        }
     }
 
     private void StartRiverGeneration()
@@ -151,8 +175,6 @@ public class MapBuilder : MonoBehaviour
         x = (x - (-MapLength / 2f) * Difference.x) / Difference.x;
 
         float y = (location.y - (-MapLength / 2f) * Difference.z) / Difference.z;
-
-        Debug.LogWarning(x + " " + y);
 
         return new Vector2Int((int)x, (int)y);
     }

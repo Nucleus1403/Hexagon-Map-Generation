@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using UnityEngine;
 
 public class RiverModule : MonoBehaviour
@@ -35,14 +36,14 @@ public class RiverModule : MonoBehaviour
             if (result == -1)
                 continue;
 
-          
+
             var gameObj = Instantiate(type.Prefab, transform.position, Quaternion.identity);
 
             gameObj.transform.eulerAngles = new Vector3(gameObj.transform.eulerAngles.x, 60 * result, gameObj.transform.eulerAngles.z);
             gameObj.transform.parent = transform;
             gameObj.transform.localPosition = Vector3.zero;
 
-            Invoke(nameof(DisableGo), 1f);
+            Invoke(nameof(DisableGo), 0.5f);
         }
     }
 
@@ -64,7 +65,7 @@ public class RiverModule : MonoBehaviour
         for (var index = 1; index < moduleType.Length; index++)
         {
             var result = string.Join("", moduleType.Skip(1)) + moduleType[0];
-            
+
             if (result == _riverType)
                 return 6 - index;
 
@@ -77,16 +78,30 @@ public class RiverModule : MonoBehaviour
 
     private void SearchForEdges()
     {
+        bool conectedToWater = false;
         foreach (var sphere in SpherePositions)
         {
-            var hit = Physics.OverlapSphere(sphere.transform.position, 0.2f);
+            var hit = Physics.OverlapSphere(sphere.transform.position, 0.4f);
             var data = 0;
 
             foreach (var collider in hit)
             {
+                if (collider.tag == "water_ocean")
+                {
+                    if (conectedToWater == false)
+                        data = 1;
+
+                    conectedToWater = true;
+                    break;
+                }
+
                 if (collider.tag == "water")
                 {
-                    data = 1;
+                    if (conectedToWater == false)
+                        data = 1;
+
+                    conectedToWater = true;
+
                     break;
                 }
 

@@ -218,8 +218,8 @@ MonoBehaviour:
   - HexData: {fileID: 11400000, guid: 5887307a9952cac4b9765cdc71ed57e7, type: 2}
     Limit: 1
   RiverLevel: 0.6
-  RiverPoints: 10
-  Offset: {x: 345.8, y: 2389.91}
+  RiverPoints: 18
+  Offset: {x: 346, y: 2390}
   Image: {fileID: 1638490932}
   WaterMeshCombiner: {fileID: 1734902467}
   MapTilesList:
