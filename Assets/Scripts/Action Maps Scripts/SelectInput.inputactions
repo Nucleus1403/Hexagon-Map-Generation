@@ -1,0 +1,34 @@
+{
+    "name": "SelectInput",
+    "maps": [
+        {
+            "name": "Select",
+            "id": "bb340cf0-c123-454d-a6aa-a7c11b2dc729",
+            "actions": [
+                {
+                    "name": "LeftClick",
+                    "type": "Value",
+                    "id": "a7969d17-63cb-4275-a51c-337e68fb1d33",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "ae02582b-8136-4abe-bfed-adc182e692f3",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LeftClick",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}

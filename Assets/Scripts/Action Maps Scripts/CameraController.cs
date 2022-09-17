@@ -22,7 +22,7 @@ public class CameraController : MonoBehaviour
 
     public float SpeedMultiplier = 2f;
 
-    public Transform Target;
+    public Transform CameraRig;
 
     [Header("Mouse Settings")]
     public float StepSize;
@@ -43,7 +43,7 @@ public class CameraController : MonoBehaviour
 
     private Quaternion _rotationQuaternion;
 
-    private Transform _target;
+    private Transform _cameraRig;
 
     private float _multiplier = 1f;
 
@@ -58,15 +58,17 @@ public class CameraController : MonoBehaviour
 
     private void Awake()
     {
-        _cameraTransform = this.GetComponentInChildren<Camera>().transform;
+        _cameraTransform = MainCamera.transform;
         _cameraInput = new CameraInput();
-        SetTargetTransform(Target);
+
+        _cameraRig = CameraRig;
+        _rotationQuaternion = _cameraRig.rotation;
     }
 
     public void OnEnable()
     {
         _zoomHeight = _cameraTransform.localPosition.y;
-        _cameraTransform.LookAt(this.transform);
+        _cameraTransform.LookAt(_cameraRig.transform);
 
         _cameraInput.Camera.RotateCameraMouse.performed += RotateCamera;
         _cameraInput.Camera.ZoomCameraMouse.performed += ZoomCamera;
@@ -101,12 +103,6 @@ public class CameraController : MonoBehaviour
         _multiplier = input > 0 ? SpeedMultiplier : 1f;
     }
 
-    public void SetTargetTransform(Transform target)
-    {
-        _target = target;
-        _rotationQuaternion = _target.rotation;
-    }
-
     private void HandleCameraRotation()
     {
         var input = _cameraInput.Camera.RotateCameraKeyboard.ReadValue<float>();
@@ -116,7 +112,7 @@ public class CameraController : MonoBehaviour
             ref _smoothRotationInputVelocity, SmoothRotationSpeed);
 
         _rotationQuaternion *= Quaternion.Euler(Vector3.up * _currentRotationInput.x * RotationSpeed * Time.deltaTime);
-        _target.rotation = _rotationQuaternion;
+        _cameraRig.rotation = _rotationQuaternion;
     }
 
     private void HandleCameraMovement()
@@ -125,10 +121,10 @@ public class CameraController : MonoBehaviour
         _currentMovementInput = Vector2.SmoothDamp(_currentMovementInput, input, ref _smoothMovementInputVelocity,
             SmoothMovementSpeed);
 
-        var dir = Camera.main.transform.rotation * new Vector3(_currentMovementInput.x, 0, _currentMovementInput.y);
+        var dir = _cameraTransform.rotation * new Vector3(_currentMovementInput.x, 0, _currentMovementInput.y);
         dir.y = 0;
 
-        _target.position += dir * Time.deltaTime * MovementSpeed * _multiplier;
+        _cameraRig.position += dir * Time.deltaTime * MovementSpeed * _multiplier;
     }
 
     private void RotateCamera(InputAction.CallbackContext obj)
@@ -141,7 +137,7 @@ public class CameraController : MonoBehaviour
         //_currentRotationInput = Vector2.SmoothDamp(_currentRotationInput, inputVector2, ref _smoothRotationInputVelocity, SmoothRotationSpeed);
 
         _rotationQuaternion *= Quaternion.Euler(Vector3.up * inputVector2.x * MouseRotationSpeed * Time.deltaTime);
-        _target.rotation = _rotationQuaternion;
+        _cameraRig.rotation = _rotationQuaternion;
     }
 
     private void HandleCameraDrag()
@@ -160,7 +156,7 @@ public class CameraController : MonoBehaviour
             else
             {
                 var dir = _startDrag - ray.GetPoint(distance);
-                _target.position += dir * Time.deltaTime * MovementSpeed;
+                _cameraRig.position += dir * Time.deltaTime * MovementSpeed;
             }
         }
     }
@@ -186,7 +182,7 @@ public class CameraController : MonoBehaviour
         zoomTarget -= ZoomSpeed * (_zoomHeight - _cameraTransform.localPosition.y) * Vector3.forward;
 
         _cameraTransform.localPosition = Vector3.Lerp(_cameraTransform.localPosition, zoomTarget, Time.deltaTime * ZoomDampening);
-        _cameraTransform.LookAt(this.transform);
+        _cameraTransform.LookAt(_cameraRig.transform);
     }
     #endregion
 }

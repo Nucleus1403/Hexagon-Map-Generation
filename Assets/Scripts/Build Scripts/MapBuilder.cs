@@ -47,7 +47,7 @@ public class MapBuilder : MonoBehaviour
 
     public void Start()
     {
-        GenerateRealMap();
+       GenerateRealMap();
     }
 
     public void GenerateRealMap()
@@ -177,6 +177,11 @@ public class MapBuilder : MonoBehaviour
         float y = (location.y - (-MapLength / 2f) * Difference.z) / Difference.z;
 
         return new Vector2Int((int)x, (int)y);
+    }
+
+    public void DestroyHex(Vector2Int location)
+    {
+        Destroy(_map[location.x, location.y].Prefab);
     }
 
     private void DestroyMap()
