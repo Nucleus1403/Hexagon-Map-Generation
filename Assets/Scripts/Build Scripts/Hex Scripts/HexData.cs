@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
@@ -8,6 +9,8 @@ public class HexData : HexDataBase
     public HexType Type;
     public Sprite Sprite;
     public GameObject Prefab;
+
+    [Space] public List<HexData> AcceptedHexes = new List<HexData>();
 }
 #if UNITY_EDITOR
 [CustomEditor(typeof(HexData))]

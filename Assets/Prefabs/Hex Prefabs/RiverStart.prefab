@@ -13,8 +13,8 @@ GameObject:
   - component: {fileID: 1629163225521644815}
   - component: {fileID: 2272643460988425790}
   m_Layer: 0
-  m_Name: grass
-  m_TagString: Untagged
+  m_Name: river_start
+  m_TagString: river_start
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

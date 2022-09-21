@@ -15,7 +15,7 @@ public class RiverGenerator : MonoBehaviour
     {
         SearchForWater();
 
-        if (_target)
+        if (_target != null)
         {
             StartSearchForPath();
         }
@@ -23,8 +23,11 @@ public class RiverGenerator : MonoBehaviour
         {
             SearchForOcean();
 
-            if (_target)
+            if (_target != null)
+            {
+
                 StartSearchForPath();
+            }
         }
     }
 
@@ -65,10 +68,16 @@ public class RiverGenerator : MonoBehaviour
 
         foreach (var hitCollider in hitCollides)
         {
+            if (Vector3.Distance(transform.position, hitCollider.transform.position) == 0)
+                continue;
+
+            if (hitCollider.tag == "river_start")
+                continue;
+
             if (hitCollider.tag != "water" && !hitCollider.name.ToLower().Contains("river")) continue;
 
             if (hitCollider.name.ToLower().Contains("river"))
-                if (!(hitCollider.transform.position.y > transform.position.y))
+                if (hitCollider.transform.position.y < transform.position.y)
                 {
                     var distanceRiver = Vector3.Distance(transform.position, hitCollider.transform.position);
 
@@ -112,6 +121,8 @@ public class RiverGenerator : MonoBehaviour
         if (_pathList.Count == 0)
         {
             _seenList.Clear();
+
+            Debug.LogWarning("second cast" + transform.position + " " + _target.transform.position);
 
             CastWaterFall(transform, Vector3.Distance(transform.position, _target.transform.position), true);
 

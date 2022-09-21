@@ -47,7 +47,7 @@ public class MapBuilder : MonoBehaviour
 
     public void Start()
     {
-       GenerateRealMap();
+        GenerateRealMap();
     }
 
     public void GenerateRealMap()
@@ -100,9 +100,9 @@ public class MapBuilder : MonoBehaviour
 
     private void SetRiverStartLocations()
     {
-        var result = Noise.FindLocalMaxim(_map);
+        var result = Noise.FindLocalMaxim(_map, 3);
 
-        result = result.Where(pos => _map[pos.x, pos.y].Value > RiverLevel).OrderBy(pos => _map[pos.x, pos.y].Value).Take(RiverPoints).ToList();
+        result = result.Where(pos => _map[pos.x, pos.y].Value > RiverLevel).OrderByDescending(pos => _map[pos.x, pos.y].Value).Take(RiverPoints).ToList();
 
         foreach (var riverStartLocation in result)
         {
@@ -122,7 +122,7 @@ public class MapBuilder : MonoBehaviour
 
                 foreach (var level in MapLevels)
                 {
-                    if (_map[x, y].Value < level.Limit)
+                    if (_map[x, y].Value <= level.Limit)
                     {
                         if (_map[x, y].Type != HexType.RiverStart)
                             go = Instantiate(level.HexData.Prefab, new Vector3(0, 0, 0), Quaternion.identity);
@@ -221,43 +221,18 @@ public class MapBuilder : MonoBehaviour
 [Serializable]
 public class MapHeightLevels
 {
+    public HexLevel Level;
     public HexData HexData;
     public float Limit;
 }
 
-[Serializable]
-public class MapData
+public enum HexLevel
 {
-    public GameObject Prefab;
-    public Vector2Int Location;
-
-    public float Value;
-
-    public HexType Type;
-
-    public MapData(GameObject prefab, Vector2Int location, HexType type)
-    {
-        Prefab = prefab;
-        Location = location;
-        Type = type;
-    }
-
-    public MapData(Vector2Int location, float value)
-    {
-        Location = location;
-        Type = HexType.Undefined;
-        Value = value;
-    }
-
-    public MapData()
-    {
-        Type = HexType.Undefined;
-    }
+    Water, Shoreline, Plain, HighPlain, Hill, HighHill, Mountain
 }
-
 public enum HexType
 {
-    Undefined, River, RiverStart, Grass, Forest, Water, Mountain, ForestHill, Cabin, Hill, Castle
+    Undefined, River, RiverStart, Grass, Forest, Water, Mountain, ForestHill, Cabin, Hill, Castle, Sand, SandRock, WaterRock
 }
 
 
@@ -278,131 +253,3 @@ public class MapBuilderEditor : Editor
     }
 }
 #endif
-
-
-public static class Noise
-{
-    public static List<Vector2Int> FindLocalMaxim(MapData[,] noiseMap)
-    {
-        var localMaxim = new List<Vector2Int>();
-
-        for (var x = 0; x < noiseMap.GetLength(0); x++)
-        {
-            for (var y = 0; y < noiseMap.GetLength(1); y++)
-            {
-                var noiseVal = noiseMap[x, y].Value;
-
-                if (CheckNeighbours(x, y, noiseMap, (neighbourNoise) => neighbourNoise > noiseVal))
-                {
-                    if (noiseVal == 0)
-                        continue;
-
-                    localMaxim.Add(new Vector2Int(x, y));
-                }
-
-            }
-        }
-        return localMaxim;
-    }
-
-    private static bool CheckNeighbours(int x, int y, MapData[,] noiseMap, Func<float, bool> failCondition)
-    {
-        var directions = new List<Vector2Int>
-        {
-            new Vector2Int( 0, 1), //N
-            new Vector2Int( 1, 1), //NE
-            new Vector2Int( 1, 0), //E
-            new Vector2Int(-1, 1), //SE
-            new Vector2Int(-1, 0), //S
-            new Vector2Int(-1,-1), //SW
-            new Vector2Int( 0,-1), //W
-            new Vector2Int( 1,-1)  //NW
-        };
-
-        foreach (var dir in directions)
-        {
-            var newPost = new Vector2Int(x + dir.x, y + dir.y);
-
-            if (newPost.x < 0 || newPost.x >= noiseMap.GetLength(0) || newPost.y < 0 || newPost.y >= noiseMap.GetLength(1))
-            {
-                continue;
-            }
-
-            if (failCondition(noiseMap[x + dir.x, y + dir.y].Value))
-            {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public static float[,] GenerateNoiseMap(int width, int height, float scale, Vector2 offset)
-    {
-        var noiseMap = new float[width, height];
-        for (var i = 0; i < width; i++)
-        {
-            for (var j = 0; j < height; j++)
-            {
-                var samplePosX = (float)i * scale + offset.x;
-                var samplePosY = (float)j * scale + offset.y;
-
-                noiseMap[i, j] = Mathf.PerlinNoise(samplePosX, samplePosY);
-            }
-        }
-
-        return noiseMap;
-    }
-
-    public static float[,] GenerateFalloffMap(int size)
-    {
-        float[,] map = new float[size, size];
-
-        for (int i = 0; i < size; i++)
-        {
-            for (int j = 0; j < size; j++)
-            {
-                float f = i / (float)size * 2 - 1;
-                float t = j / (float)size * 2 - 1;
-                float value = Mathf.Max(Mathf.Abs(f), Mathf.Abs(t));
-                map[i, j] = Evaluate(value);
-            }
-        }
-
-        return map;
-    }
-
-    public static MapData[,] GenerateNoiseMapWithFalloff(int size, float scale, Vector2 offset)
-    {
-        var noiseMap = new MapData[size, size];
-        for (var i = 0; i < size; i++)
-        {
-            for (var j = 0; j < size; j++)
-            {
-                var samplePosX = (float)i * scale + offset.x;
-                var samplePosY = (float)j * scale + offset.y;
-
-                var f = i / (float)size * 2 - 1;
-                var t = j / (float)size * 2 - 1;
-
-                var valueFalloff = Evaluate(Mathf.Max(Mathf.Abs(f), Mathf.Abs(t)));
-                var valueMap = Mathf.PerlinNoise(samplePosX, samplePosY);
-                var value = Mathf.Clamp01(valueMap - valueFalloff);
-
-                noiseMap[i, j] = new MapData(new Vector2Int(i, j), value)
-                {
-                    Location = new Vector2Int(i, j)
-                };
-            }
-        }
-
-        return noiseMap;
-    }
-
-    public static float Evaluate(float value)
-    {
-        float a = 3;
-        float b = 5.7f;
-
-        return Mathf.Pow(value, a) / (Mathf.Pow(value, a) + Mathf.Pow(b - b * value, a));
-    }
-}

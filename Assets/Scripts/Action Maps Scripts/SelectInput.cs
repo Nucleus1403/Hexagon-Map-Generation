@@ -29,7 +29,7 @@ public partial class @SelectInput : IInputActionCollection2, IDisposable
             ""actions"": [
                 {
                     ""name"": ""LeftClick"",
-                    ""type"": ""Value"",
+                    ""type"": ""Button"",
                     ""id"": ""a7969d17-63cb-4275-a51c-337e68fb1d33"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
@@ -42,7 +42,7 @@ public partial class @SelectInput : IInputActionCollection2, IDisposable
                     ""name"": """",
                     ""id"": ""ae02582b-8136-4abe-bfed-adc182e692f3"",
                     ""path"": ""<Mouse>/leftButton"",
-                    ""interactions"": """",
+                    ""interactions"": ""Tap"",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""LeftClick"",

@@ -206,9 +206,11 @@ MonoBehaviour:
   NoiseScale: 0.12
   MapLevels:
   - HexData: {fileID: 11400000, guid: b819aefc9a7a6ed4dbf4da07b1c0b2a4, type: 2}
-    Limit: 0.18
+    Limit: 0.22
+  - HexData: {fileID: 11400000, guid: d84b76dd9e27cf24daf395ff26c22e73, type: 2}
+    Limit: 0.43
   - HexData: {fileID: 11400000, guid: 4ba5d9845ba778b4894a694a7b94b165, type: 2}
-    Limit: 0.56
+    Limit: 0.5
   - HexData: {fileID: 11400000, guid: 8c53774b117347e48afbc4bba14ae117, type: 2}
     Limit: 0.76
   - HexData: {fileID: 11400000, guid: e9abc80c1d6f0b34483f711cde74e255, type: 2}
@@ -218,8 +220,8 @@ MonoBehaviour:
   - HexData: {fileID: 11400000, guid: 5887307a9952cac4b9765cdc71ed57e7, type: 2}
     Limit: 1
   RiverLevel: 0.6
-  RiverPoints: 18
-  Offset: {x: 346, y: 2390}
+  RiverPoints: 45
+  Offset: {x: 345.8, y: 2389.91}
   Image: {fileID: 1638490932}
   WaterMeshCombiner: {fileID: 1734902467}
   MapTilesList:
