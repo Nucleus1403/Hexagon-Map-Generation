@@ -19,6 +19,7 @@ public class MapBuilder : MonoBehaviour
     public float NoiseScale = 0.2f;
 
     public List<MapHeightLevels> MapLevels;
+    public List<MapForestLevels> MapForestLevels;
 
     public float RiverLevel = 0.6f;
 
@@ -36,7 +37,9 @@ public class MapBuilder : MonoBehaviour
     [HideInInspector]
     public List<GameObject> MapTilesList = new List<GameObject>();
 
-    private MapData[,] _map;
+    public MapData[,] Map { get; private set; }
+
+    private float[,] _forestMap;
 
     private List<Vector2Int> _riverStartLocations;
 
@@ -54,17 +57,62 @@ public class MapBuilder : MonoBehaviour
     {
         DestroyMap();
 
-        _map = Noise.GenerateNoiseMapWithFalloff(MapLength, NoiseScale, Offset);
+        GenerateNoiseMaps();
+
+        //SetOcean();
 
         SetRiverStartLocations();
 
-        CreateMap();
+        ShowMap();
 
-        SetOcean();
+        //CreateMap();
 
-        Invoke(nameof(StartRiverGeneration), 0.5f);
+
+        //Invoke(nameof(StartRiverGeneration), 0.5f);
 
         //WaterMeshCombiner.CombineMeshes();
+
+    }
+
+    private void ShowMap()
+    {
+        for (var x = 0; x < MapLength; x++)
+        {
+            for (var y = 0; y < MapLength; y++)
+            {
+                GameObject go = null;
+
+                foreach (var level in MapLevels)
+                {
+                    if (Map[x, y].Value <= level.Limit)
+                    {
+                        go = Instantiate(level.HexData.Prefab, new Vector3(0, 0, 0), Quaternion.identity);
+                        
+                        Map[x, y].Prefab = go;
+                        break;
+                    }
+                }
+
+                var height = (int)(Map[x, y].Value * 100);
+                go.transform.position = new Vector3(go.transform.position.x, (float)(height - (height % 5)) / 100, go.transform.position.z);
+
+
+                if (y % 2 == 0)
+                    go.transform.position = new Vector3((-MapLength / 2f) * Difference.x + x * Difference.x, go.transform.position.y, (-MapLength / 2f) * Difference.z + y * Difference.z);
+                else
+                    go.transform.position = new Vector3((-MapLength / 2f) * Difference.x + x * Difference.x + 0.5f, go.transform.position.y, (-MapLength / 2f) * Difference.z + y * Difference.z);
+
+                go.transform.SetParent(this.transform);
+
+                MapTilesList.Add(go);
+            }
+        }
+    }
+
+    private void GenerateNoiseMaps()
+    {
+        Map = Noise.GenerateNoiseMapWithFalloff(MapLength, NoiseScale, Offset);
+        _forestMap = Noise.GenerateNoiseMap(MapLength, MapLength, NoiseScale, Offset * 3);
 
     }
 
@@ -78,9 +126,9 @@ public class MapBuilder : MonoBehaviour
     {
         if (x >= 0 && y >= 0 && x < MapLength && y < MapLength)
         {
-            if (_map[x, y].Prefab.transform.GetChild(0).tag != "water") return;
+            if (Map[x, y].Prefab.transform.GetChild(0).tag != "water") return;
 
-            _map[x, y].Prefab.transform.GetChild(0).tag = "water_ocean";
+            Map[x, y].Prefab.transform.GetChild(0).tag = "water_ocean";
 
             SetToOcean(x + 1, y);
             SetToOcean(x - 1, y);
@@ -93,20 +141,20 @@ public class MapBuilder : MonoBehaviour
     {
         foreach (var riverStartLocation in _riverStartLocations)
         {
-            _map[riverStartLocation.x, riverStartLocation.y].Prefab.GetComponent<RiverGenerator>().StartSearching();
+            Map[riverStartLocation.x, riverStartLocation.y].Prefab.GetComponent<RiverGenerator>().StartSearching();
         }
     }
 
 
     private void SetRiverStartLocations()
     {
-        var result = Noise.FindLocalMaxim(_map, 3);
+        var result = Noise.FindLocalMaxim(Map, 3);
 
-        result = result.Where(pos => _map[pos.x, pos.y].Value > RiverLevel).OrderByDescending(pos => _map[pos.x, pos.y].Value).Take(RiverPoints).ToList();
+        result = result.Where(pos => Map[pos.x, pos.y].Value > RiverLevel).OrderByDescending(pos => Map[pos.x, pos.y].Value).Take(RiverPoints).ToList();
 
         foreach (var riverStartLocation in result)
         {
-            _map[riverStartLocation.x, riverStartLocation.y].Type = HexType.RiverStart;
+            Map[riverStartLocation.x, riverStartLocation.y].Type = HexType.RiverStart;
         }
 
         _riverStartLocations = result;
@@ -122,10 +170,12 @@ public class MapBuilder : MonoBehaviour
 
                 foreach (var level in MapLevels)
                 {
-                    if (_map[x, y].Value <= level.Limit)
+                    if (Map[x, y].Value <= level.Limit)
                     {
-                        if (_map[x, y].Type != HexType.RiverStart)
+                        if (Map[x, y].Type != HexType.RiverStart)
+                        {
                             go = Instantiate(level.HexData.Prefab, new Vector3(0, 0, 0), Quaternion.identity);
+                        }
                         else
                             go = Instantiate(DataHolder.GetHexOfType(HexType.RiverStart).Prefab, new Vector3(0, 0, 0), Quaternion.identity);
 
@@ -137,15 +187,15 @@ public class MapBuilder : MonoBehaviour
                         }
                         else
                         {
-                            var height = (int)(_map[x, y].Value * 100);
+                            var height = (int)(Map[x, y].Value * 100);
                             go.transform.position = new Vector3(go.transform.position.x, (float)(height - (height % 5)) / 100, go.transform.position.z);
 
                         }
 
-                        if (_map[x, y].Type == HexType.Undefined)
-                            _map[x, y].Type = level.HexData.Type;
+                        if (Map[x, y].Type == HexType.Undefined)
+                            Map[x, y].Type = level.HexData.Type;
 
-                        _map[x, y].Prefab = go;
+                        Map[x, y].Prefab = go;
                         break;
                     }
                 }
@@ -165,8 +215,8 @@ public class MapBuilder : MonoBehaviour
 
     public void SetRiverLocation(GameObject prefab, Vector2Int location)
     {
-        _map[location.x, location.y].Type = HexType.River;
-        _map[location.x, location.y].Prefab = prefab;
+        Map[location.x, location.y].Type = HexType.River;
+        Map[location.x, location.y].Prefab = prefab;
     }
 
     public Vector2Int GetTileLocationByPosition(Vector2 location)
@@ -181,13 +231,13 @@ public class MapBuilder : MonoBehaviour
 
     public void DestroyHex(Vector2Int location)
     {
-        Destroy(_map[location.x, location.y].Prefab);
+        Destroy(Map[location.x, location.y].Prefab);
     }
 
     private void DestroyMap()
     {
-        if (!_map.IsUnityNull())
-            foreach (var go in _map)
+        if (!Map.IsUnityNull())
+            foreach (var go in Map)
             {
                 Destroy(go.Prefab);
             }
@@ -223,6 +273,14 @@ public class MapHeightLevels
 {
     public HexLevel Level;
     public HexData HexData;
+    public float Limit;
+}
+
+[Serializable]
+public class MapForestLevels
+{
+    public List<HexLevel> AcceptedLevel;
+    public ForestHexData ForestHexData;
     public float Limit;
 }
 
