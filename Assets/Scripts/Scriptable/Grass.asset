@@ -16,3 +16,9 @@ MonoBehaviour:
   Type: 3
   Sprite: {fileID: 21300000, guid: 31d2049fd7744ac4c82114f37a3769fb, type: 3}
   Prefab: {fileID: 7885419126988457847, guid: 129255fa969f1fe4994214e95a828187, type: 3}
+  AcceptedHexes:
+  - {fileID: 11400000, guid: 13de2ffc609c2de45949d2fb4f61d7e1, type: 2}
+  - {fileID: 11400000, guid: b4eec0f350c655b428291711810b5903, type: 2}
+  - {fileID: 11400000, guid: 8c53774b117347e48afbc4bba14ae117, type: 2}
+  - {fileID: 11400000, guid: 16f66e96a9153804aa54205437c2d42e, type: 2}
+  - {fileID: 11400000, guid: 5887307a9952cac4b9765cdc71ed57e7, type: 2}

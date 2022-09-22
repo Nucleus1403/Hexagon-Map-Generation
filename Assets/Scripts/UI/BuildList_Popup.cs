@@ -1,37 +1,45 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using static UnityEditor.Progress;
 
 public class BuildList_Popup : MonoBehaviour
 {
     #region Fields
 
-    private int childCount;
     [SerializeField] private float componentHeight = 550.0f;
-    [SerializeField] private float childHeight = 150.0f;
+    [SerializeField] private Button buildingButtonPrefab;
+    [SerializeField] private GameObject buildingListContent;
+
+    private List<int> activeBuildingButtonTypes = new List<int>();
+
+    [SerializeField] private HexData testHexdata;   // Testing
 
     #endregion Fields
 
     #region Mono
 
-    private void Awake()
+    [ContextMenu("TEST")]
+    private void TEST()
     {
-        childCount = transform.childCount;
-        Debug.Log("BuildList button count: " + childCount);
-        AdaptComponentHeight();
+        activeBuildingButtonTypes.Add((int)testHexdata.Type);
+
+        Instantiate(buildingButtonPrefab, buildingListContent.transform);
+        buildingButtonPrefab.GetComponentInChildren<Image>().sprite = testHexdata.Sprite;
     }
 
     #endregion Mono
 
     #region Methods
 
-    private void AdaptComponentHeight()
+    public void Initialize(List<HexData> AcceptedHex)
     {
-        childCount = transform.childCount;
-        Debug.Log("BuildList button count: " + childCount);
-        if (childCount > 3)
+        foreach (var item in AcceptedHex)
         {
-            this.gameObject.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, (componentHeight + childHeight * childCount + 20 * (childCount + 1)));
+            activeBuildingButtonTypes.Add((int)item.Type);
+
+            Instantiate(buildingButtonPrefab, buildingListContent.transform);
+            buildingButtonPrefab.GetComponentInChildren<Image>().sprite = item.Sprite;
         }
     }
 
