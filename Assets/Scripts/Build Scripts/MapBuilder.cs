@@ -19,6 +19,11 @@ public class MapBuilder : MonoBehaviour
     public float NoiseScale = 0.2f;
 
     public List<MapHeightLevels> MapLevels;
+
+    [Space]
+    [Header("Forest Settings")]
+    public List<HexLevel> AcceptedLevel;
+    public ForestHexData ForestHexData;
     public List<MapForestLevels> MapForestLevels;
 
     public float RiverLevel = 0.6f;
@@ -66,9 +71,9 @@ public class MapBuilder : MonoBehaviour
         ShowMap();
 
         //CreateMap();
+        SetOcean();
 
-
-        //Invoke(nameof(StartRiverGeneration), 0.5f);
+        Invoke(nameof(StartRiverGeneration), 0.5f);
 
         //WaterMeshCombiner.CombineMeshes();
 
@@ -82,20 +87,7 @@ public class MapBuilder : MonoBehaviour
             {
                 GameObject go = null;
 
-                foreach (var level in MapLevels)
-                {
-                    if (Map[x, y].Value <= level.Limit)
-                    {
-                        go = Instantiate(level.HexData.Prefab, new Vector3(0, 0, 0), Quaternion.identity);
-                        
-                        Map[x, y].Prefab = go;
-                        break;
-                    }
-                }
-
-                var height = (int)(Map[x, y].Value * 100);
-                go.transform.position = new Vector3(go.transform.position.x, (float)(height - (height % 5)) / 100, go.transform.position.z);
-
+                go = GenerateHex(go, Map[x, y], _forestMap[x, y]);
 
                 if (y % 2 == 0)
                     go.transform.position = new Vector3((-MapLength / 2f) * Difference.x + x * Difference.x, go.transform.position.y, (-MapLength / 2f) * Difference.z + y * Difference.z);
@@ -109,10 +101,99 @@ public class MapBuilder : MonoBehaviour
         }
     }
 
+    private MapHeightLevels GetMapHeightLevels(float value)
+    {
+        foreach (var level in MapLevels.Where(level => value <= level.Limit))
+        {
+            return level;
+        }
+
+        return MapLevels[^0];
+    }
+
+    private MapForestLevels GetMapForestLevels(float value)
+    {
+        foreach (var level in MapForestLevels.Where(level => value <= level.Limit))
+        {
+            return level;
+        }
+
+        return MapForestLevels[0];
+    }
+
+    private GameObject GenerateHex(GameObject go, MapData data, float forestValue)
+    {
+        var level = GetMapHeightLevels(data.Value);
+
+        data.HeightLevel = level.Level;
+        var height = (int)(data.Value * 100);
+
+        if (level.Level == HexLevel.Water)
+        {
+            go = Instantiate(level.HexData.Prefab, new Vector3(0, 0, 0), Quaternion.identity);
+            go.transform.position = new Vector3(go.transform.position.x, level.Limit, go.transform.position.z);
+            WaterMeshCombiner.AddMeshes(go.GetComponentInChildren<MeshFilter>());
+
+            data.Type = HexType.Water;
+            data.Prefab = go;
+            return go;
+        }
+
+        if (data.Type == HexType.RiverStart)
+        {
+            go = Instantiate(DataHolder.GetHexOfType(HexType.RiverStart).Prefab, new Vector3(0, 0, 0), Quaternion.identity);
+            go.transform.position = new Vector3(go.transform.position.x, (float)(height - (height % 5)) / 100, go.transform.position.z);
+
+            data.Type = HexType.RiverStart;
+            data.Prefab = go;
+            return go;
+        }
+
+        switch (level.Level)
+        {
+            case HexLevel.Shoreline:
+            case HexLevel.Plain:
+            case HexLevel.HighPlain:
+                var forestLevel = GetMapForestLevels(forestValue);
+
+                switch (forestLevel.Level)
+                {
+                    case ForestLevel.None:
+                        go = Instantiate(level.HexData.Prefab, new Vector3(0, 0, 0), Quaternion.identity);
+                        break;
+                    case ForestLevel.Low:
+                    case ForestLevel.Medium:
+                    case ForestLevel.High:
+                        go = Instantiate(ForestHexData.GetPrefabByLevel(forestLevel.Level), new Vector3(0, 0, 0), Quaternion.identity);
+                        if (level.Level == HexLevel.Shoreline || level.Level == HexLevel.Plain)
+                        {
+                            go.transform.GetChild(1).gameObject.SetActive(false);
+                        }
+                        else
+                        { 
+                            go.transform.GetChild(0).gameObject.SetActive(false);
+                        }
+                        break;
+                }
+                break;
+            case HexLevel.Hill:
+            case HexLevel.HighHill:
+            case HexLevel.Mountain:
+                go = Instantiate(level.HexData.Prefab, new Vector3(0, 0, 0), Quaternion.identity);
+
+                break;
+        }
+
+        go.transform.position = new Vector3(go.transform.position.x, (float)(height - (height % 5)) / 100, go.transform.position.z);
+
+        data.Prefab = go;
+        return go;
+    }
+
     private void GenerateNoiseMaps()
     {
         Map = Noise.GenerateNoiseMapWithFalloff(MapLength, NoiseScale, Offset);
-        _forestMap = Noise.GenerateNoiseMap(MapLength, MapLength, NoiseScale, Offset * 3);
+        _forestMap = Noise.GenerateNoiseMap(MapLength, MapLength, 0.16f, Offset * 3);
 
     }
 
@@ -279,9 +360,8 @@ public class MapHeightLevels
 [Serializable]
 public class MapForestLevels
 {
-    public List<HexLevel> AcceptedLevel;
-    public ForestHexData ForestHexData;
     public float Limit;
+    public ForestLevel Level;
 }
 
 public enum HexLevel

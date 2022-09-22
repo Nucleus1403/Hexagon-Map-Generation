@@ -122,7 +122,7 @@ public class RiverGenerator : MonoBehaviour
         {
             _seenList.Clear();
 
-            Debug.LogWarning("second cast" + transform.position + " " + _target.transform.position);
+            //Debug.LogWarning("second cast" + transform.position + " " + _target.transform.position);
 
             CastWaterFall(transform, Vector3.Distance(transform.position, _target.transform.position), true);
 

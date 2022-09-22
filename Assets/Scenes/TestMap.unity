@@ -205,20 +205,38 @@ MonoBehaviour:
   MapLength: 64
   NoiseScale: 0.12
   MapLevels:
-  - HexData: {fileID: 11400000, guid: b819aefc9a7a6ed4dbf4da07b1c0b2a4, type: 2}
+  - Level: 0
+    HexData: {fileID: 11400000, guid: b819aefc9a7a6ed4dbf4da07b1c0b2a4, type: 2}
     Limit: 0.22
-  - HexData: {fileID: 11400000, guid: d84b76dd9e27cf24daf395ff26c22e73, type: 2}
+  - Level: 1
+    HexData: {fileID: 11400000, guid: d84b76dd9e27cf24daf395ff26c22e73, type: 2}
     Limit: 0.43
-  - HexData: {fileID: 11400000, guid: 4ba5d9845ba778b4894a694a7b94b165, type: 2}
+  - Level: 2
+    HexData: {fileID: 11400000, guid: d84b76dd9e27cf24daf395ff26c22e73, type: 2}
     Limit: 0.5
-  - HexData: {fileID: 11400000, guid: 8c53774b117347e48afbc4bba14ae117, type: 2}
-    Limit: 0.76
-  - HexData: {fileID: 11400000, guid: e9abc80c1d6f0b34483f711cde74e255, type: 2}
-    Limit: 0.8
-  - HexData: {fileID: 11400000, guid: 16f66e96a9153804aa54205437c2d42e, type: 2}
-    Limit: 0.85
-  - HexData: {fileID: 11400000, guid: 5887307a9952cac4b9765cdc71ed57e7, type: 2}
+  - Level: 3
+    HexData: {fileID: 11400000, guid: 4ba5d9845ba778b4894a694a7b94b165, type: 2}
+    Limit: 0.7
+  - Level: 4
+    HexData: {fileID: 11400000, guid: e9abc80c1d6f0b34483f711cde74e255, type: 2}
+    Limit: 0.74
+  - Level: 5
+    HexData: {fileID: 11400000, guid: 16f66e96a9153804aa54205437c2d42e, type: 2}
+    Limit: 0.81
+  - Level: 6
+    HexData: {fileID: 11400000, guid: 5887307a9952cac4b9765cdc71ed57e7, type: 2}
     Limit: 1
+  AcceptedLevel: 0100000002000000030000000400000005000000
+  ForestHexData: {fileID: 11400000, guid: 6093bc577f4f4cb4f843cabd06f3101e, type: 2}
+  MapForestLevels:
+  - Limit: 0.5
+    Level: 0
+  - Limit: 0.68
+    Level: 1
+  - Limit: 0.81
+    Level: 2
+  - Limit: 0.91
+    Level: 3
   RiverLevel: 0.6
   RiverPoints: 45
   Offset: {x: 345.8, y: 2389.91}

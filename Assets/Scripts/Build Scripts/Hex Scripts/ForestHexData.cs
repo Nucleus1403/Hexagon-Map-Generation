@@ -6,6 +6,17 @@ using UnityEngine;
 public class ForestHexData : HexData
 {
     public List<ForestData> ForestData;
+
+    public GameObject GetPrefabByLevel(ForestLevel level)
+    {
+        foreach (var value in ForestData)
+        {
+            if (level == value.Level)
+                return value.Prefab;
+        }
+
+        return null;
+    }
 }
 
 [Serializable]
@@ -15,7 +26,8 @@ public class ForestData
     public GameObject Prefab;
 }
 
+
 public enum ForestLevel
 {
-    Low,Medium,High
+    None,Low,Medium,High
 }
