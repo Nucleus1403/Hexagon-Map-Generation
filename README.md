@@ -1,1 +1,1 @@
-# This is a test for a hex game with map generation based on perlin noise
+# Beta for hex game with map generation based on Perlin noise
